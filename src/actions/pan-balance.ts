@@ -50,7 +50,7 @@ export type PanBalanceChoice = PanBalance | 998 | 999
  * @returns
  *   The pan/balance specified in options.
  */
-function getPanBalance(instance: sqInstance, options: CompanionOptionValues): PanBalanceChoice | null {
+export function getPanBalance(instance: sqInstance, options: CompanionOptionValues): PanBalanceChoice | null {
 	const rawOptionVal = options.leveldb
 	if (rawOptionVal === 998 || rawOptionVal === 999) {
 		return rawOptionVal
@@ -75,7 +75,7 @@ function getPanBalance(instance: sqInstance, options: CompanionOptionValues): Pa
 	return null
 }
 
-function subscribeOperation(
+export function subscribeOperation(
 	instance: sqInstance,
 	mixer: Mixer,
 	model: Model,
