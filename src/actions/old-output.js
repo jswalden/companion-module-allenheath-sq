@@ -44,7 +44,7 @@ function fadeLevelToSpecificOutputAction(self, mixer, options, type) {
  * @returns {import('./actionid.js').ActionDefinitions<import('./output.js').OutputActionId>}
  *   The set of all output-adjustment action definitions.
  */
-export function oldOutputActions(self, mixer, choices, levelOption, fadingOption, panLevelOption, connectionLabel) {
+export function outputActions(self, mixer, choices, levelOption, fadingOption, panLevelOption, connectionLabel) {
 	return {
 		[OutputActionId.LRLevelOutput]: {
 			name: 'LR fader level to output',
