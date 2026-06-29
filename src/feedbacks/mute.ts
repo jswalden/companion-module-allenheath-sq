@@ -1,3 +1,4 @@
+import type { Equal, Expect } from 'type-testing'
 import type { CompanionFeedbackDefinition, CompanionMigrationFeedback } from '@companion-module/base'
 import { faderNumber } from '../fader-number.js'
 import { LRStrip } from '../mixer/lr.js'
@@ -31,6 +32,32 @@ const AllMuteWithStripFeedbacks: ReadonlySet<string> = new Set(
 )
 
 const MuteFeedbackFaderOptionId = 'n'
+
+type MuteNumberedSignalType = {
+	options: {
+		[MuteFeedbackFaderOptionId]: number
+	}
+	type: 'boolean'
+}
+
+/** Mute feedbacks. */
+export type MuteFeedbacks = {
+	[MuteFeedbackId.MuteLR]: {
+		// There's only one LR signal, so no need for an option to identify it.
+		options: Record<never, never>
+		type: 'boolean'
+	}
+	[MuteFeedbackId.MuteInputChannel]: MuteNumberedSignalType
+	[MuteFeedbackId.MuteMix]: MuteNumberedSignalType
+	[MuteFeedbackId.MuteGroup]: MuteNumberedSignalType
+	[MuteFeedbackId.MuteMatrix]: MuteNumberedSignalType
+	[MuteFeedbackId.MuteDCA]: MuteNumberedSignalType
+	[MuteFeedbackId.MuteFXReturn]: MuteNumberedSignalType
+	[MuteFeedbackId.MuteFXSend]: MuteNumberedSignalType
+	[MuteFeedbackId.MuteMuteGroup]: MuteNumberedSignalType
+}
+
+type _AllMuteFeedbacksAccountedFor = Expect<Equal<keyof MuteFeedbacks, MuteFeedbackId>>
 
 const ObsoleteMuteFeedbackFaderOptionId = 'channel'
 
