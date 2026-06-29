@@ -17,11 +17,7 @@ export const CurrentSceneId = 'currentScene'
  */
 export const SceneRecalledTriggerId = 'sceneRecalledTrigger'
 
-/**
- * All module variables.
- *
- * @allowunused
- */
+/** All module variables. */
 export type SQVariables = {
 	[SceneRecalledTriggerId]: number
 	[CurrentSceneId]: number

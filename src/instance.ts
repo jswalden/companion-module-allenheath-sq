@@ -4,13 +4,33 @@ import {
 	InstanceBase,
 	type SomeCompanionConfigField,
 } from '@companion-module/base'
-import { getActions } from './actions/actions.js'
-import { GetConfigFields, getHost, type SQConfig } from './config.js'
-import { getFeedbacks } from './feedbacks/feedbacks.js'
+import { getActions, type SQActions } from './actions/actions.js'
+import { GetConfigFields, getHost, type SQConfig, type SQSecrets } from './config.js'
+import { getFeedbacks, type SQFeedbacks } from './feedbacks/feedbacks.js'
 import { Mixer } from './mixer/mixer.js'
 import { canUpdateConfigWithoutRestarting, noConnectionConfig, validateConfig } from './config.js'
 import { getPresets } from './presets/presets.js'
-import { CurrentSceneId, getVariables, SceneRecalledTriggerId, type VariableDefinitions } from './variables.js'
+import {
+	CurrentSceneId,
+	getVariables,
+	SceneRecalledTriggerId,
+	type SQVariables,
+	type VariableDefinitions,
+} from './variables.js'
+
+/**
+ * Full module typing information.
+ *
+ * @allowunused
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+interface SQTypes {
+	config: SQConfig
+	secrets: SQSecrets
+	actions: SQActions
+	feedbacks: SQFeedbacks
+	variables: SQVariables
+}
 
 function translateVariableDefinitions(defs: VariableDefinitions): CompanionVariableDefinition[] {
 	return Object.entries(defs).map(

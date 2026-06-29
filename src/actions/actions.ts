@@ -26,11 +26,7 @@ export type ActionId =
 	| OutputLevelActionId
 	| OutputPanBalanceActionId
 
-/**
- * All mixer actions.
- *
- * @allowunused
- */
+/** All mixer actions. */
 export type SQActions = AssignActions &
 	LevelActions &
 	MuteActions &
