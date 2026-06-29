@@ -1,3 +1,4 @@
+import type { Equal, Expect } from 'type-testing'
 import type { CompanionActionDefinition, CompanionMigrationAction } from '@companion-module/base'
 import { type Model } from '../mixer/model.js'
 import { type Mixer } from '../mixer/mixer.js'
@@ -13,6 +14,25 @@ export const SceneActionId = {
 } as const
 
 export type SceneActionId = (typeof SceneActionId)[keyof typeof SceneActionId]
+
+const SceneNumberOptionId = 'scene'
+const SceneAdjustOptionId = 'scene' // XXX probably should rename this for clarity
+
+/** Scene-related actions. */
+export type SceneActions = {
+	[SceneActionId.SceneRecall]: {
+		options: {
+			[SceneNumberOptionId]: number
+		}
+	}
+	[SceneActionId.SceneStep]: {
+		options: {
+			[SceneAdjustOptionId]: number
+		}
+	}
+}
+
+type _AllSceneActionsAccountedFor = Expect<Equal<keyof SceneActions, SceneActionId>>
 
 /**
  * The action ID of an action whose implementation was identical to that of
@@ -78,7 +98,7 @@ export function sceneActions(instance: sqInstance, mixer: Mixer): Record<SceneAc
 				{
 					type: 'number',
 					label: 'Scene nr.',
-					id: 'scene',
+					id: SceneNumberOptionId,
 					default: 1,
 					min: 1,
 					max: model.scenes,
@@ -86,7 +106,7 @@ export function sceneActions(instance: sqInstance, mixer: Mixer): Record<SceneAc
 				},
 			],
 			callback: async ({ options }) => {
-				const scene = toScene(instance, model, options.scene)
+				const scene = toScene(instance, model, options[SceneNumberOptionId])
 				if (scene === null) {
 					return
 				}
@@ -100,7 +120,7 @@ export function sceneActions(instance: sqInstance, mixer: Mixer): Record<SceneAc
 				{
 					type: 'number',
 					label: 'Scene +/-',
-					id: 'scene',
+					id: SceneAdjustOptionId,
 					default: 1,
 					min: StepMin,
 					max: StepMax,
@@ -108,7 +128,7 @@ export function sceneActions(instance: sqInstance, mixer: Mixer): Record<SceneAc
 				},
 			],
 			callback: async ({ options }) => {
-				const adjust = toSceneStep(instance, options.scene)
+				const adjust = toSceneStep(instance, options[SceneAdjustOptionId])
 				if (adjust === null) {
 					return
 				}

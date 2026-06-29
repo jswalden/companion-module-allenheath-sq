@@ -1,15 +1,19 @@
 import type { CompanionActionDefinition } from '@companion-module/base'
-import { assignActions, type AssignActionId } from './assign.js'
+import { type AssignActionId, type AssignActions, assignActions } from './assign.js'
 import { Choices } from './choices.js'
 import type { sqInstance } from '../instance.js'
-import { levelActions, type LevelActionId } from './level.js'
+import { type LevelActionId, type LevelActions, levelActions } from './level.js'
 import { type Mixer } from '../mixer/mixer.js'
-import { muteActions, type MuteActionId } from './mute.js'
-import { outputLevelActions, type OutputLevelActionId } from './output/level.js'
-import { outputPanBalanceActions, type OutputPanBalanceActionId } from './output/pan-balance.js'
-import { panBalanceActions, type PanBalanceActionId } from './pan-balance.js'
-import { sceneActions, type SceneActionId } from './scene.js'
-import { softKeyActions, type SoftKeyActionId } from './softkey.js'
+import { type MuteActionId, type MuteActions, muteActions } from './mute.js'
+import { type OutputLevelActionId, type OutputLevelActions, outputLevelActions } from './output/level.js'
+import {
+	type OutputPanBalanceActionId,
+	type OutputPanBalanceActions,
+	outputPanBalanceActions,
+} from './output/pan-balance.js'
+import { type PanBalanceActionId, type PanBalanceActions, panBalanceActions } from './pan-balance.js'
+import { type SceneActionId, type SceneActions, sceneActions } from './scene.js'
+import { type SoftKeyActionId, type SoftKeyActions, softKeyActions } from './softkey.js'
 
 /** All action IDs. */
 export type ActionId =
@@ -21,6 +25,20 @@ export type ActionId =
 	| PanBalanceActionId
 	| OutputLevelActionId
 	| OutputPanBalanceActionId
+
+/**
+ * All mixer actions.
+ *
+ * @allowunused
+ */
+export type SQActions = AssignActions &
+	LevelActions &
+	MuteActions &
+	OutputLevelActions &
+	OutputPanBalanceActions &
+	PanBalanceActions &
+	SceneActions &
+	SoftKeyActions
 
 /**
  * Get all action definitions exposed by this module.

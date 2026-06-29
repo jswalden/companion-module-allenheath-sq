@@ -25,6 +25,18 @@ export const SoftKeyOp = {
 
 export type SoftKeyOp = (typeof SoftKeyOp)[keyof typeof SoftKeyOp]
 
+/** Softkey-related actions. */
+export type SoftKeyActions = {
+	[SoftKeyActionId.SoftKey]: {
+		options: {
+			[SoftKeyOptionId]: number
+			[SoftKeyOpOptionId]: SoftKeyOp
+		}
+	}
+}
+
+type _AllSoftKeyActionsAccountedFor = Expect<Equal<keyof SoftKeyActions, SoftKeyActionId>>
+
 const ObsoleteZeroBasedSoftKeyOptionId = 'softKey'
 const ObsoleteSoftKeyOperationId = 'pressedsk'
 

@@ -1,6 +1,15 @@
+import type { Equal, Expect } from 'type-testing'
 import type { CompanionActionDefinition, CompanionMigrationAction, CompanionOptionValues } from '@companion-module/base'
 import { faderNumber } from '../../fader-number.js'
-import { FadingOption, getFadeParameters, LevelOption } from '../fading.js'
+import {
+	type FadeDuration,
+	type FadeDurationOptionId,
+	FadingOption,
+	getFadeParameters,
+	LevelOption,
+	type SignalLevelChange,
+	type SignalLevelOptionId,
+} from '../fading.js'
 import type { sqInstance } from '../../instance.js'
 import { LRStrip } from '../../mixer/lr.js'
 import type { Mixer } from '../../mixer/mixer.js'
@@ -31,6 +40,37 @@ const AllOutputLevelActions: ReadonlySet<string> = new Set(
 )
 
 const OutputLevelFaderOptionId = 'n'
+
+type OutputLevelOptions = {
+	[SignalLevelOptionId]: SignalLevelChange
+	[FadeDurationOptionId]: FadeDuration
+}
+
+type FaderOutputLevelOptions = {
+	[OutputLevelFaderOptionId]: number
+} & OutputLevelOptions
+
+/** Output signal level adjustment actions. */
+export type OutputLevelActions = {
+	[OutputLevelActionId.LRLevelOutput]: {
+		// There's only one LR, so don't include an input option.
+		options: OutputLevelOptions
+	}
+	[OutputLevelActionId.MixLevelOutput]: {
+		options: FaderOutputLevelOptions
+	}
+	[OutputLevelActionId.FXSendLevelOutput]: {
+		options: FaderOutputLevelOptions
+	}
+	[OutputLevelActionId.MatrixLevelOutput]: {
+		options: FaderOutputLevelOptions
+	}
+	[OutputLevelActionId.DCALevelOutput]: {
+		options: FaderOutputLevelOptions
+	}
+}
+
+type _AllOutputLevelActionsAccountedFor = Expect<Equal<keyof OutputLevelActions, OutputLevelActionId>>
 
 /**
  * The action ID of the obsolete "Fader level to output" action, used to alter

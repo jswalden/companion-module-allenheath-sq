@@ -40,6 +40,47 @@ export const AllMuteStripActions: ReadonlySet<string> = new Set(
 export const StripOptionId = 'n'
 export const StatusOptionId = 'status'
 
+type MuteActionOptions = {
+	[StripOptionId]: number
+	[StatusOptionId]: MuteOperation
+}
+
+/** Signal muting actions. */
+export type MuteActions = {
+	[MuteActionId.MuteInputChannel]: {
+		options: MuteActionOptions
+	}
+	[MuteActionId.MuteLR]: {
+		options: {
+			// mute_lr omits the unnecessary strip number
+			[StatusOptionId]: MuteOperation
+		}
+	}
+	[MuteActionId.MuteMix]: {
+		options: MuteActionOptions
+	}
+	[MuteActionId.MuteGroup]: {
+		options: MuteActionOptions
+	}
+	[MuteActionId.MuteMatrix]: {
+		options: MuteActionOptions
+	}
+	[MuteActionId.MuteFXSend]: {
+		options: MuteActionOptions
+	}
+	[MuteActionId.MuteFXReturn]: {
+		options: MuteActionOptions
+	}
+	[MuteActionId.MuteDCA]: {
+		options: MuteActionOptions
+	}
+	[MuteActionId.MuteMuteGroup]: {
+		options: MuteActionOptions
+	}
+}
+
+type _AllMuteActionsAccountedFor = Expect<Equal<keyof MuteActions, MuteActionId>>
+
 const ObsoleteStripOptionId = 'strip'
 const ObsoleteStatusOptionId = 'mute'
 

@@ -1,3 +1,4 @@
+import type { Equal, Expect } from 'type-testing'
 import type {
 	CompanionActionDefinition,
 	CompanionInputFieldBase,
@@ -50,6 +51,61 @@ export type AssignActionId = (typeof AssignActionId)[keyof typeof AssignActionId
 export const AssignSourceOptionId = 'source'
 export const AssignSinksOptionId = 'sinks'
 export const AssignActiveOptionId = 'active'
+
+type ActiveOptions = {
+	[AssignActiveOptionId]: boolean
+}
+
+type AssignSourceToSinksOptions = {
+	[AssignSourceOptionId]: number
+	[AssignSinksOptionId]: number[]
+} & ActiveOptions
+
+type AssignSourceToMixesAndLROptions = {
+	[AssignSourceOptionId]: number
+	[AssignSinksOptionId]: (number | 'LR')[]
+} & ActiveOptions
+
+type AssignMixOrLRToSinksOptions = {
+	[AssignSourceOptionId]: number | 'LR'
+	[AssignSinksOptionId]: number[]
+} & ActiveOptions
+
+/** Assignment-change actions. */
+export type AssignActions = {
+	[AssignActionId.InputChannelToMix]: {
+		options: AssignSourceToMixesAndLROptions
+	}
+	[AssignActionId.InputChannelToGroup]: {
+		options: AssignSourceToSinksOptions
+	}
+	[AssignActionId.GroupToMix]: {
+		options: AssignSourceToMixesAndLROptions
+	}
+	[AssignActionId.FXReturnToMix]: {
+		options: AssignSourceToMixesAndLROptions
+	}
+	[AssignActionId.FXReturnToGroup]: {
+		options: AssignSourceToSinksOptions
+	}
+	[AssignActionId.InputChannelToFXSend]: {
+		options: AssignSourceToSinksOptions
+	}
+	[AssignActionId.GroupToFXSend]: {
+		options: AssignSourceToSinksOptions
+	}
+	[AssignActionId.FXReturnToFXSend]: {
+		options: AssignSourceToSinksOptions
+	}
+	[AssignActionId.MixToMatrix]: {
+		options: AssignMixOrLRToSinksOptions
+	}
+	[AssignActionId.GroupToMatrix]: {
+		options: AssignSourceToSinksOptions
+	}
+}
+
+type _AllAssignActionsAccountedFor = Expect<Equal<keyof AssignActions, AssignActionId>>
 
 const ObsoleteMixOrLRSourceOptionId = 'inputMix'
 

@@ -7,7 +7,15 @@ import type {
 	DropdownChoice,
 } from '@companion-module/base'
 import { mixOrLROption } from './choices.js'
-import { FadingOption, getFadeParameters, LevelOption } from './fading.js'
+import {
+	type FadeDuration,
+	type FadeDurationOptionId,
+	FadingOption,
+	getFadeParameters,
+	LevelOption,
+	type SignalLevelChange,
+	type SignalLevelOptionId,
+} from './fading.js'
 import type { sqInstance } from '../instance.js'
 import {
 	convertZeroIndexedLowercaseLROptionToOneIndexedUppercaseLROption,
@@ -47,6 +55,67 @@ export const LevelActionId = {
 
 export type LevelActionId = (typeof LevelActionId)[keyof typeof LevelActionId]
 
+type LevelAndFadeOptions = {
+	[SignalLevelOptionId]: SignalLevelChange
+	[FadeDurationOptionId]: FadeDuration
+}
+
+export const LevelSetSourceOptionId = 'source'
+export const LevelSetSinkOptionId = 'sink'
+
+type SourceLevelInMixOrLROptions = LevelAndFadeOptions & {
+	[LevelSetSourceOptionId]: number
+	[LevelSetSinkOptionId]: number | 'lr'
+}
+
+type SourceLevelInSinkOptions = LevelAndFadeOptions & {
+	[LevelSetSourceOptionId]: number
+	[LevelSetSinkOptionId]: number
+}
+
+type MixOrLRLevelInSinkOptions = LevelAndFadeOptions & {
+	[LevelSetSourceOptionId]: number | 'lr'
+	[LevelSetSinkOptionId]: number
+}
+
+/** Signal level adjustment actions. */
+export type LevelActions = {
+	[LevelActionId.InputChannelLevelInMixOrLR]: {
+		options: SourceLevelInMixOrLROptions
+	}
+	[LevelActionId.GroupLevelInMixOrLR]: {
+		options: SourceLevelInMixOrLROptions
+	}
+	[LevelActionId.FXReturnLevelInMixOrLR]: {
+		options: SourceLevelInMixOrLROptions
+	}
+	[LevelActionId.FXReturnLevelInGroup]: {
+		// This action reflected a onetime A&H MIDI API docs bug.  It's now been
+		// gutted and takes only an `invalid` option corresponding to a
+		// static-text "option".
+		options: {
+			invalid: string
+		}
+	}
+	[LevelActionId.InputChannelLevelInFXSend]: {
+		options: SourceLevelInSinkOptions
+	}
+	[LevelActionId.GroupLevelInFXSend]: {
+		options: SourceLevelInSinkOptions
+	}
+	[LevelActionId.FXReturnLevelInFXSend]: {
+		options: SourceLevelInSinkOptions
+	}
+	[LevelActionId.MixOrLRLevelInMatrix]: {
+		options: MixOrLRLevelInSinkOptions
+	}
+	[LevelActionId.GroupLevelInMatrix]: {
+		options: SourceLevelInMixOrLROptions
+	}
+}
+
+type _AllLevelActionsAccountedFor = Expect<Equal<keyof LevelActions, LevelActionId>>
+
 const ObsoleteFXReturnLevelinFXSendId = 'fxslev_to_fxs'
 
 /**
@@ -68,9 +137,6 @@ export function tryFixFXRLevelInFXSIdTypo(action: CompanionMigrationAction): boo
 	action.actionId = LevelActionId.FXReturnLevelInFXSend
 	return true
 }
-
-export const LevelSetSourceOptionId = 'source'
-export const LevelSetSinkOptionId = 'sink'
 
 const ObsoleteLevelSetSourceOptionId = 'input'
 const ObsoleteLevelSetSinkOptionId = 'assign'

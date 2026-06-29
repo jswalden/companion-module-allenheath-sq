@@ -4,10 +4,13 @@ import type { Level } from '../mixer/level.js'
 import { type NRPN, splitNRPN } from '../mixer/nrpn/nrpn.js'
 import { repr } from '../utils/pretty.js'
 
+export const SignalLevelOptionId = 'leveldb'
+export const FadeDurationOptionId = 'fade'
+
 export const FadingOption = {
 	type: 'dropdown',
 	label: 'Fading',
-	id: 'fade',
+	id: FadeDurationOptionId,
 	default: 0,
 	choices: [
 		{ label: `Off`, id: 0 },
@@ -21,13 +24,19 @@ export const FadingOption = {
 	minChoicesForSearch: 0,
 } as const satisfies CompanionInputFieldDropdown
 
+export type FadeDuration =
+	| 0 // immediate
+	| 1 // 1s
+	| 2 // 2s
+	| 3 // 3s
+
 /**
  * An option specifying all potential levels of a source in a sink or as output.
  */
 export const LevelOption = {
 	type: 'dropdown',
 	label: 'Level',
-	id: 'leveldb',
+	id: SignalLevelOptionId,
 	default: 0,
 	choices: ((): DropdownChoice[] => {
 		const levels: DropdownChoice[] = []
@@ -57,6 +66,19 @@ export const LevelOption = {
 	minChoicesForSearch: 0,
 } as const satisfies CompanionInputFieldDropdown
 
+export type SignalLevelChange =
+	| 1000 // Last dB value
+	| 'step+0.1'
+	| 'step+1'
+	| 'step+3'
+	| 'step+6'
+	| 'step-0.1'
+	| 'step-1'
+	| 'step-3'
+	| 'step-6'
+	| '-inf'
+	| `${number} dB` // (-90, -40] by 5, [-39, -10] by 1, [-9.5, 10] by 0.5
+
 type FadeParameters = {
 	start: Level
 	end: Level
@@ -84,7 +106,7 @@ export function getFadeParameters(
 ): FadeParameters | null {
 	// Presets that incidentally invoke this function didn't always specify a
 	// fade time, so treat a missing fade as zero to support them.
-	const fade = options.fade
+	const fade = options[FadeDurationOptionId]
 	const fadeTimeMs = fade === undefined ? 0 : Number(fade) * MsPerSecond
 	if (!(fadeTimeMs >= 0)) {
 		instance.log('error', `Bad fade time ${fadeTimeMs} milliseconds, aborting`)
@@ -120,7 +142,7 @@ export function getFadeParameters(
 	}
 
 	let end: Level
-	const levelOption = options.leveldb
+	const levelOption = options[SignalLevelOptionId]
 	if (typeof levelOption === 'number' && -90 < levelOption && levelOption <= 10) {
 		end = levelOption
 	} else if (levelOption === '-inf') {

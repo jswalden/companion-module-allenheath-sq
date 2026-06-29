@@ -1,3 +1,4 @@
+import type { Equal, Expect } from 'type-testing'
 import type { CompanionActionDefinition, CompanionMigrationAction, CompanionOptionValues } from '@companion-module/base'
 import { faderNumber } from '../../fader-number.js'
 import type { sqInstance } from '../../instance.js'
@@ -7,7 +8,13 @@ import type { InputOutputType, Model } from '../../mixer/model.js'
 import { getCommonCount } from '../../mixer/models.js'
 import { splitNRPN } from '../../mixer/nrpn/nrpn.js'
 import { OutputBalanceNRPNCalculator, type SinkAsOutputForNRPN } from '../../mixer/nrpn/output.js'
-import { getPanBalance, type PanBalanceChoice, PanLevelOption } from '../pan-balance.js'
+import {
+	getPanBalance,
+	type PanBalanceOptions,
+	type PanBalanceChoice,
+	PanLevelOption,
+	ShowVarOptionId,
+} from '../pan-balance.js'
 import { toSourceOrSink } from '../to-source-or-sink.js'
 import { moveZeroIndexedOptionToOneIndexed } from '../../upgrades/zero-indexed-to-one.js'
 import type { ZeroIndexed } from '../../utils/indexed.js'
@@ -29,6 +36,26 @@ const AllOutputFaderPanBalanceActions: ReadonlySet<string> = new Set(
 )
 
 const OutputPanBalanceFaderOptionId = 'n'
+
+type OutputSignalPanBalanceOptions = {
+	[OutputPanBalanceFaderOptionId]: number
+} & PanBalanceOptions
+
+/** Output signal pan/balance adjustment actions. */
+export type OutputPanBalanceActions = {
+	[OutputPanBalanceActionId.LRPanBalanceOutput]: {
+		// There's only one LR, so don't include an input option.
+		options: PanBalanceOptions
+	}
+	[OutputPanBalanceActionId.MixPanBalanceOutput]: {
+		options: OutputSignalPanBalanceOptions
+	}
+	[OutputPanBalanceActionId.MatrixPanBalanceOutput]: {
+		options: OutputSignalPanBalanceOptions
+	}
+}
+
+type _AllOutputPanBalanceActionsAccountedFor = Expect<Equal<keyof OutputPanBalanceActions, OutputPanBalanceActionId>>
 
 /**
  * The action ID of the obsolete "Pan/Bal level to output" action, used to alter
@@ -220,7 +247,7 @@ export function outputPanBalanceActions(
 	const ShowVar = {
 		type: 'textinput',
 		label: 'Instance variable containing pan/balance level (click Learn to refresh)',
-		id: 'showvar',
+		id: ShowVarOptionId,
 		default: '',
 	} as const
 

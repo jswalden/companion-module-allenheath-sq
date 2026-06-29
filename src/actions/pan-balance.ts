@@ -1,3 +1,4 @@
+import type { Equal, Expect } from 'type-testing'
 import type {
 	CompanionActionDefinition,
 	CompanionInputFieldDropdown,
@@ -29,6 +30,8 @@ import { moveZeroIndexedOptionToOneIndexed } from '../upgrades/zero-indexed-to-o
 import type { ZeroIndexed } from '../utils/indexed.js'
 import { repr } from '../utils/pretty.js'
 
+const PanBalanceLevelOptionId = 'leveldb'
+
 /**
  * Action IDs for all actions setting the pan/balance of a mixer source in a
  * mixer sink.
@@ -46,6 +49,62 @@ export type PanBalanceActionId = (typeof PanBalanceActionId)[keyof typeof PanBal
 
 const PanBalanceSourceOptionId = 'source'
 const PanBalanceSinkOptionId = 'sink'
+
+export const ShowVarOptionId = 'showvar'
+
+export type PanBalanceOptions = {
+	[PanBalanceLevelOptionId]: PanBalanceChoice
+	// Action callbacks don't ever use this, so as far as they're concerned it
+	// likely can be omitted.  But learn functions, which return a string that
+	// contains the variable name of the pan/balance variable for the selected
+	// output signal, need to be able to return that string as option value, which
+	// probably requires we specify this here.
+	[ShowVarOptionId]: string
+}
+
+type PanBalanceSourceInMixOrLROptions = {
+	[PanBalanceSourceOptionId]: number
+	[PanBalanceSinkOptionId]: number | 'lr'
+} & PanBalanceOptions
+
+type PanBalanceMixOrLRInSinkOptions = {
+	[PanBalanceSourceOptionId]: number | 'lr'
+	[PanBalanceSinkOptionId]: number
+} & PanBalanceOptions
+
+type PanBalanceSourceInSinkOptions = {
+	[PanBalanceSourceOptionId]: number
+	[PanBalanceSinkOptionId]: number
+} & PanBalanceOptions
+
+/** Signal pan/balance adjustment in stereo sink actions. */
+export type PanBalanceActions = {
+	[PanBalanceActionId.InputChannelPanBalanceInMixOrLR]: {
+		options: PanBalanceSourceInMixOrLROptions
+	}
+	[PanBalanceActionId.GroupPanBalanceInMixOrLR]: {
+		options: PanBalanceSourceInMixOrLROptions
+	}
+	[PanBalanceActionId.FXReturnPanBalanceInMixOrLR]: {
+		options: PanBalanceSourceInMixOrLROptions
+	}
+	[PanBalanceActionId.FXReturnPanBalanceInGroup]: {
+		// This action reflected a onetime A&H MIDI API docs bug.  It's now been
+		// gutted and takes only an `invalid` option corresponding to a
+		// static-text "option".
+		options: {
+			invalid: string
+		}
+	}
+	[PanBalanceActionId.MixOrLRPanBalanceInMatrix]: {
+		options: PanBalanceMixOrLRInSinkOptions
+	}
+	[PanBalanceActionId.GroupPanBalanceInMatrix]: {
+		options: PanBalanceSourceInSinkOptions
+	}
+}
+
+type _AllOutputLevelActionsAccountedFor = Expect<Equal<keyof PanBalanceActions, PanBalanceActionId>>
 
 const ObsoletePanBalanceSourceOptionId = 'input'
 const ObsoletePanBalanceSinkOptionId = 'assign'
@@ -137,7 +196,7 @@ export function tryMakePanBalanceSourceSinkOptionsUserFriendly(action: Companion
 export const PanLevelOption = {
 	type: 'dropdown',
 	label: 'Level',
-	id: 'leveldb',
+	id: PanBalanceLevelOptionId,
 	default: 'CTR',
 	choices: ((): DropdownChoice[] => {
 		const panLevels = []
@@ -165,7 +224,7 @@ export type PanBalanceChoice = PanBalance | 998 | 999
  *   The pan/balance specified in options.
  */
 export function getPanBalance(instance: sqInstance, options: CompanionOptionValues): PanBalanceChoice | null {
-	const rawOptionVal = options.leveldb
+	const rawOptionVal = options[PanBalanceLevelOptionId]
 	if (rawOptionVal === 998 || rawOptionVal === 999) {
 		return rawOptionVal
 	}
