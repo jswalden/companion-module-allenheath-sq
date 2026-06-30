@@ -1487,7 +1487,7 @@ export class Mixer {
 
 	/** Press (and do not subsequently release) a softkey. */
 	pressSoftKey(softKey: ZeroIndexed): void {
-		if (softKey < 0 || this.model.softKeys <= softKey) {
+		if (this.model.softKeys <= softKey) {
 			throw new Error(`Attempting to press invalid softkey ${softKey}`)
 		}
 
@@ -1498,7 +1498,7 @@ export class Mixer {
 
 	/** Release a previously-pressed softkey. */
 	releaseSoftKey(softKey: ZeroIndexed): void {
-		if (softKey < 0 || this.model.softKeys <= softKey) {
+		if (this.model.softKeys <= softKey) {
 			throw new Error(`Attempting to release invalid softkey ${softKey}`)
 		}
 
