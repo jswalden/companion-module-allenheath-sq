@@ -1,6 +1,6 @@
 import type { CompanionPresetDefinitions } from '@companion-module/base'
-import { AssignActionId } from '../actions/assign.js'
-import { LevelActionId } from '../actions/level.js'
+import { AssignActionId, AssignActiveOptionId, AssignSinksOptionId, AssignSourceOptionId } from '../actions/assign.js'
+import { LevelActionId, LevelSetSinkOptionId, LevelSetSourceOptionId } from '../actions/level.js'
 import { MuteActionId, StatusOptionId, StripOptionId } from '../actions/mute.js'
 import { LR } from '../mixer/lr.js'
 import { MuteOperation } from '../mixer/mixer.js'
@@ -28,25 +28,25 @@ export function talkbackPresets(talkbackChannel: ZeroIndexed, model: Model): Com
 						{
 							actionId: AssignActionId.InputChannelToMix,
 							options: {
-								inputChannel: talkbackChannel,
-								mixAssign: [LR],
-								mixActive: false,
+								[AssignSourceOptionId]: talkbackChannel + 1,
+								[AssignSinksOptionId]: [LR],
+								[AssignActiveOptionId]: false,
 							},
 						},
 						{
 							actionId: AssignActionId.InputChannelToMix,
 							options: {
-								inputChannel: talkbackChannel,
-								mixAssign: [mix],
-								mixActive: true,
+								[AssignSourceOptionId]: talkbackChannel + 1,
+								[AssignSinksOptionId]: [mix + 1],
+								[AssignActiveOptionId]: true,
 							},
 						},
 						{
 							actionId: LevelActionId.InputChannelLevelInMixOrLR,
 							options: {
-								input: talkbackChannel,
-								assign: mix,
-								level: 49,
+								[LevelSetSourceOptionId]: talkbackChannel + 1,
+								[LevelSetSinkOptionId]: mix + 1,
+								leveldb: 49,
 							},
 						},
 						{
@@ -61,17 +61,17 @@ export function talkbackPresets(talkbackChannel: ZeroIndexed, model: Model): Com
 						{
 							actionId: AssignActionId.InputChannelToMix,
 							options: {
-								inputChannel: talkbackChannel,
-								mixAssign: [mix],
-								mixActive: false,
+								[AssignSourceOptionId]: talkbackChannel + 1,
+								[AssignSinksOptionId]: [mix + 1],
+								[AssignActiveOptionId]: false,
 							},
 						},
 						{
 							actionId: LevelActionId.InputChannelLevelInMixOrLR,
 							options: {
-								input: talkbackChannel,
-								assign: mix,
-								level: 0,
+								[LevelSetSourceOptionId]: talkbackChannel + 1,
+								[LevelSetSinkOptionId]: mix + 1,
+								leveldb: 0,
 							},
 						},
 						{

@@ -8,7 +8,13 @@ import type {
 } from '@companion-module/base'
 import { mixOrLROption } from './choices.js'
 import type { sqInstance } from '../instance.js'
-import { LR, LRStrip, type MixOrLR, tryUpgradeMixOrLROptionEncoding } from '../mixer/lr.js'
+import {
+	convertZeroIndexedLowercaseLROptionToOneIndexedUppercaseLROption,
+	LR,
+	LRStrip,
+	type MixOrLR,
+	tryUpgradeMixOrLROptionEncoding,
+} from '../mixer/lr.js'
 import type { Mixer } from '../mixer/mixer.js'
 import type { Model } from '../mixer/model.js'
 import { type NRPN, splitNRPN } from '../mixer/nrpn/nrpn.js'
@@ -19,6 +25,7 @@ import {
 } from '../mixer/nrpn/source-to-sink.js'
 import { type PanBalance } from '../mixer/pan-balance.js'
 import { toMixOrLR, toSourceOrSink } from './to-source-or-sink.js'
+import { moveZeroIndexedOptionToOneIndexed } from '../upgrades/zero-indexed-to-one.js'
 import type { ZeroIndexed } from '../utils/indexed.js'
 import { repr } from '../utils/pretty.js'
 
@@ -37,8 +44,11 @@ export const PanBalanceActionId = {
 
 export type PanBalanceActionId = (typeof PanBalanceActionId)[keyof typeof PanBalanceActionId]
 
-const PanBalanceSourceOptionId = 'input'
-const PanBalanceSinkOptionId = 'assign'
+const PanBalanceSourceOptionId = 'source'
+const PanBalanceSinkOptionId = 'sink'
+
+const ObsoletePanBalanceSourceOptionId = 'input'
+const ObsoletePanBalanceSinkOptionId = 'assign'
 
 /**
  * The LR mix used to be identified using the number `99` in options.  This
@@ -58,12 +68,66 @@ export function tryUpgradePanBalanceMixOrLREncoding(action: CompanionMigrationAc
 		case PanBalanceActionId.InputChannelPanBalanceInMixOrLR:
 		case PanBalanceActionId.GroupPanBalanceInMixOrLR:
 		case PanBalanceActionId.FXReturnPanBalanceInMixOrLR:
-			return tryUpgradeMixOrLROptionEncoding(action, PanBalanceSinkOptionId)
+			return tryUpgradeMixOrLROptionEncoding(action, ObsoletePanBalanceSinkOptionId)
 		case PanBalanceActionId.MixOrLRPanBalanceInMatrix:
-			return tryUpgradeMixOrLROptionEncoding(action, PanBalanceSourceOptionId)
+			return tryUpgradeMixOrLROptionEncoding(action, ObsoletePanBalanceSourceOptionId)
 		default:
 			return false
 	}
+}
+
+type SourceSinkInfo = {
+	sourceIsMixOrLR: boolean
+	sinkIsMixOrLR: boolean
+}
+
+const OnlySourceIsMixOrLR = {
+	sourceIsMixOrLR: true,
+	sinkIsMixOrLR: false,
+} as const satisfies SourceSinkInfo
+
+const OnlySinkIsMixOrLR = {
+	sourceIsMixOrLR: false,
+	sinkIsMixOrLR: true,
+} as const satisfies SourceSinkInfo
+
+const SourceAndSinkAreNotMixOrLR = {
+	sourceIsMixOrLR: false,
+	sinkIsMixOrLR: false,
+} as const satisfies SourceSinkInfo
+
+const UserUnfriendlyOptionInfo = {
+	[PanBalanceActionId.FXReturnPanBalanceInMixOrLR]: OnlySinkIsMixOrLR,
+	[PanBalanceActionId.GroupPanBalanceInMatrix]: SourceAndSinkAreNotMixOrLR,
+	[PanBalanceActionId.GroupPanBalanceInMixOrLR]: OnlySinkIsMixOrLR,
+	[PanBalanceActionId.InputChannelPanBalanceInMixOrLR]: OnlySinkIsMixOrLR,
+	[PanBalanceActionId.MixOrLRPanBalanceInMatrix]: OnlySourceIsMixOrLR,
+} as const satisfies Record<Exclude<PanBalanceActionId, 'fxrpan_to_grp'>, SourceSinkInfo>
+
+export function tryMakePanBalanceSourceSinkOptionsUserFriendly(action: CompanionMigrationAction): boolean {
+	if (!Object.hasOwn(UserUnfriendlyOptionInfo, action.actionId)) {
+		return false
+	}
+
+	const options = action.options
+	if (!(ObsoletePanBalanceSourceOptionId in options)) {
+		return false
+	}
+
+	const { sourceIsMixOrLR, sinkIsMixOrLR } =
+		UserUnfriendlyOptionInfo[action.actionId as keyof typeof UserUnfriendlyOptionInfo]
+
+	const convertSource = sourceIsMixOrLR
+		? convertZeroIndexedLowercaseLROptionToOneIndexedUppercaseLROption
+		: moveZeroIndexedOptionToOneIndexed
+	convertSource(options, ObsoletePanBalanceSourceOptionId, PanBalanceSourceOptionId)
+
+	const convertSink = sinkIsMixOrLR
+		? convertZeroIndexedLowercaseLROptionToOneIndexedUppercaseLROption
+		: moveZeroIndexedOptionToOneIndexed
+	convertSink(options, ObsoletePanBalanceSinkOptionId, PanBalanceSinkOptionId)
+
+	return true
 }
 
 /**
