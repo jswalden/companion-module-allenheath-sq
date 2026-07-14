@@ -1,8 +1,5 @@
-// Allen & Heath SQ Series
-
 import { type CompanionVariableValue, InstanceBase, type SomeCompanionConfigField } from '@companion-module/base'
 import { getActions } from './actions/actions.js'
-import { Choices } from './choices.js'
 import { GetConfigFields, getHost, type SQConfig } from './config.js'
 import { getFeedbacks } from './feedbacks/feedbacks.js'
 import { Mixer } from './mixer/mixer.js'
@@ -122,10 +119,8 @@ export class sqInstance extends InstanceBase<SQConfig> {
 
 		const model = mixer.model
 
-		const choices = new Choices(model)
-
 		this.initVariableDefinitions(mixer)
-		this.setActionDefinitions(getActions(this, mixer, choices))
+		this.setActionDefinitions(getActions(this, mixer))
 		this.setFeedbackDefinitions(getFeedbacks(mixer))
 
 		this.#lastLabel = this.label

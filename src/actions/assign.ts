@@ -7,7 +7,7 @@ import type {
 	CompanionMigrationAction,
 	CompanionOptionValues,
 } from '@companion-module/base'
-import { type Choices } from '../choices.js'
+import type { Choices } from './choices.js'
 import type { sqInstance } from '../instance.js'
 import { LR, type MixOrLR, tryUpgradeMixOrLRArrayEncoding, tryUpgradeMixOrLROptionEncoding } from '../mixer/lr.js'
 import type { Mixer } from '../mixer/mixer.js'

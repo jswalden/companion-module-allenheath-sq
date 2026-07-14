@@ -1,6 +1,6 @@
 import type { CompanionActionDefinition } from '@companion-module/base'
 import { assignActions, type AssignActionId } from './assign.js'
-import { type Choices } from '../choices.js'
+import { Choices } from './choices.js'
 import { faderNumberZeroIndexed } from '../fader-number.js'
 import type { sqInstance } from '../instance.js'
 import { levelActions, type LevelActionId } from './level.js'
@@ -35,16 +35,12 @@ void faderNumberZeroIndexed
  *   The instance for which definitions are being generated.
  * @param mixer
  *   The mixer in use by the instance.
- * @param choices
- *   Option choices for use in the actions.
  * @returns
  *   All actions defined by this module.
  */
-export function getActions(
-	instance: sqInstance,
-	mixer: Mixer,
-	choices: Choices,
-): Record<ActionId, CompanionActionDefinition> {
+export function getActions(instance: sqInstance, mixer: Mixer): Record<ActionId, CompanionActionDefinition> {
+	const choices = new Choices(mixer.model)
+
 	return {
 		...muteActions(instance, mixer),
 		...(() => {
