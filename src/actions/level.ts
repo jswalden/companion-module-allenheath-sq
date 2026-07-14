@@ -1,13 +1,12 @@
 import type { Equal, Expect } from 'type-testing'
 import type {
 	CompanionActionDefinition,
-	CompanionInputFieldBase,
-	CompanionInputFieldDropdown,
 	CompanionInputFieldNumber,
 	CompanionMigrationAction,
 	CompanionOptionValues,
+	DropdownChoice,
 } from '@companion-module/base'
-import type { Choices } from './choices.js'
+import { mixOrLROption } from './choices.js'
 import { FadingOption, getFadeParameters, LevelOption } from './fading.js'
 import type { sqInstance } from '../instance.js'
 import { LR, LRStrip, tryUpgradeMixOrLRArrayEncoding, tryUpgradeMixOrLROptionEncoding } from '../mixer/lr.js'
@@ -197,21 +196,6 @@ function signalOption<Id extends CompanionInputFieldNumber['id']>(
 	}
 }
 
-function mixOrLROption<Id extends CompanionInputFieldBase['id']>(
-	label: string,
-	id: Id,
-	choices: Choices,
-): CompanionInputFieldDropdown {
-	return {
-		type: 'dropdown',
-		label,
-		id,
-		default: 0,
-		choices: choices.mixesAndLR,
-		minChoicesForSearch: 0,
-	}
-}
-
 /**
  * Generate action definitions for setting the levels of sources in sinks: input
  * channels in mixes, mixes in LR, and so on and so forth.
@@ -220,15 +204,15 @@ function mixOrLROption<Id extends CompanionInputFieldBase['id']>(
  *   The instance for which actions are being generated.
  * @param mixer
  *   The mixer object to use when executing the actions.
- * @param choices
- *   Option choices for use in the actions.
+ * @param mixesAndLR
+ *   A choices list containing all numbered mixes plus the LR mix.
  * @returns
  *   The set of all level action definitions.
  */
 export function levelActions(
 	instance: sqInstance,
 	mixer: Mixer,
-	choices: Choices,
+	mixesAndLR: DropdownChoice[],
 ): Record<LevelActionId, CompanionActionDefinition> {
 	const model = mixer.model
 	const counts = model.inputOutputCounts
@@ -237,8 +221,8 @@ export function levelActions(
 		signalOption(label, LevelSetSourceOptionId, counts, type)
 	const sinkNumber = (label: string, type: 'group' | 'fxSend' | 'matrix') =>
 		signalOption(label, LevelSetSinkOptionId, counts, type)
-	const mixNumberOrLRSource = (label: string) => mixOrLROption(label, LevelSetSourceOptionId, choices)
-	const mixNumberOrLRSink = (label: string) => mixOrLROption(label, LevelSetSinkOptionId, choices)
+	const mixNumberOrLRSource = (label: string) => mixOrLROption(label, LevelSetSourceOptionId, mixesAndLR)
+	const mixNumberOrLRSink = (label: string) => mixOrLROption(label, LevelSetSinkOptionId, mixesAndLR)
 
 	return {
 		[LevelActionId.InputChannelLevelInMixOrLR]: {

@@ -41,6 +41,8 @@ void faderNumberZeroIndexed
 export function getActions(instance: sqInstance, mixer: Mixer): Record<ActionId, CompanionActionDefinition> {
 	const choices = new Choices(mixer.model)
 
+	const mixesAndLR = choices.mixesAndLR
+
 	return {
 		...muteActions(instance, mixer),
 		...(() => {
@@ -54,8 +56,8 @@ export function getActions(instance: sqInstance, mixer: Mixer): Record<ActionId,
 		})(),
 		...softKeyActions(instance, mixer),
 		...assignActions(instance, mixer, choices),
-		...levelActions(instance, mixer, choices),
-		...panBalanceActions(instance, mixer, choices),
+		...levelActions(instance, mixer, mixesAndLR),
+		...panBalanceActions(instance, mixer, mixesAndLR),
 		...outputLevelActions(instance, mixer),
 		...outputPanBalanceActions(instance, mixer),
 		...sceneActions(instance, mixer),
