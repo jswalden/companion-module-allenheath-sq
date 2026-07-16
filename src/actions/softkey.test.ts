@@ -1,6 +1,6 @@
-import type { CompanionMigrationAction } from '@companion-module/base'
 import { describe, expect, test } from 'vitest'
 import { ObsoleteSoftKeyOp, SoftKeyActionId, SoftKeyOp, tryMakeSoftKeyOneIndexed } from './softkey.js'
+import { type OldCompanionMigrationAction as CompanionMigrationAction } from '../upgrades/types.js'
 
 function makeObsoleteZeroIndexedSoftKeyAction(softKey: number, pressedsk: ObsoleteSoftKeyOp): CompanionMigrationAction {
 	return {

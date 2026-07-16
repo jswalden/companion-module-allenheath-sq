@@ -1,10 +1,10 @@
 import type { Equal, Expect } from 'type-testing'
-import type { CompanionMigrationAction } from '@companion-module/base'
-import type { CompanionActionDefinitions } from './compat.js'
+import type { CompanionActionDefinitions } from '@companion-module/base'
 import { type Model } from '../mixer/model.js'
 import { type Mixer } from '../mixer/mixer.js'
 import type { sqInstance } from '../instance.js'
 import { type OptionValue } from './to-source-or-sink.js'
+import type { OldCompanionMigrationAction } from '../upgrades/types.js'
 import { type OneIndexed, oneIndexedNumber } from '../utils/indexed.js'
 import { repr } from '../utils/pretty.js'
 
@@ -47,7 +47,7 @@ const ObsoleteSetCurrentSceneId = 'current_scene'
  * were exactly identical (other than in actionId and the name for each visible
  * in UI).  Rewrite the latter sort of action to instead encode the former.
  */
-export function tryCoalesceSceneRecallActions(action: CompanionMigrationAction): boolean {
+export function tryCoalesceSceneRecallActions(action: OldCompanionMigrationAction): boolean {
 	if (action.actionId !== ObsoleteSetCurrentSceneId) {
 		return false
 	}
@@ -103,7 +103,7 @@ export function sceneActions(instance: sqInstance, mixer: Mixer): CompanionActio
 					default: 1,
 					min: 1,
 					max: model.scenes,
-					required: true,
+					asInteger: true,
 				},
 			],
 			callback: async ({ options }) => {
@@ -125,7 +125,7 @@ export function sceneActions(instance: sqInstance, mixer: Mixer): CompanionActio
 					default: 1,
 					min: StepMin,
 					max: StepMax,
-					required: true,
+					asInteger: true,
 				},
 			],
 			callback: async ({ options }) => {

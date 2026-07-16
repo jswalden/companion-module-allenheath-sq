@@ -41,7 +41,7 @@ import { panBalanceLevelToVCVF, vcvfToReadablePanBalance } from './pan-balance.j
 import { type OneIndexed, oneIndexedNumber, type ZeroIndexed } from '../utils/indexed.js'
 import { prettyByte, prettyBytes } from '../utils/pretty.js'
 import { sleep, asyncSleep } from '../utils/sleep.js'
-import { SceneRecalledTriggerId, CurrentSceneId } from '../variables.js'
+import { CurrentSceneId, SceneRecalledTriggerId, type SQVariables } from '../variables.js'
 
 /**
  * The two values of the NRPN fader law setting in the mixer.  The two values
@@ -400,22 +400,30 @@ export class Mixer {
 			verboseLog(`Fader received: ${prettyNRPN(nrpn)}, VC=${prettyByte(vc)}, VF=${prettyByte(vf)}`)
 
 			const { MSB, LSB } = splitNRPN(nrpn)
-			const levelKey = `level_${MSB}.${LSB}` as const
+			const levelVariable = `level_${MSB}.${LSB}` as const
 
 			let ost = false
-			const res = instance.getVariableValue(levelKey)
+			const res = instance.getVariableValue(levelVariable)
 			if (res !== undefined) {
-				this.lastValue[levelKey] = res
+				this.lastValue[levelVariable] = res
 				ost = true
 			}
 
 			const level = levelFromNRPNData(vc, vf, getFaderLaw(this.#instance.config))
-			instance.setVariableValues({
-				[levelKey]: level,
-			})
+
+			type assert_VariableAndValueAreCorrectlyTyped = Expect<Equal<SQVariables[typeof levelVariable], typeof level>>
+
+			instance.setVariableValues(
+				// @/ts-expect-error TypeScript currently misunderstands multiple
+				// non-overlapping index signatures, despite the above assertion
+				// passing, so the error here must be ignored.
+				{
+					[levelVariable]: level,
+				},
+			)
 
 			if (!ost) {
-				this.lastValue[levelKey] = level
+				this.lastValue[levelVariable] = level
 			}
 		})
 		mixerChannelParser.on('pan_level', (nrpn: NRPN<'panBalance'>, vc: number, vf: number) => {
@@ -845,9 +853,18 @@ export class Mixer {
 		//     the gun intentional, so that the sent level can be immediately
 		//     presumed by "what's the current level" queries?
 		const { MSB, LSB } = splitNRPN(nrpn)
-		this.#instance.setVariableValues({
-			[`level_${MSB}.${LSB}`]: level,
-		})
+		const levelVariable = `level_${MSB}.${LSB}` as const
+
+		type assert_VariableAndValueAreCorrectlyTyped = Expect<Equal<SQVariables[typeof levelVariable], typeof level>>
+
+		this.#instance.setVariableValues(
+			// @ts-expect-error TypeScript currently misunderstands multiple
+			// non-overlapping index signatures, despite the above assertion
+			// passing, so the error here must be ignored.
+			{
+				[levelVariable]: level,
+			},
+		)
 	}
 
 	/**

@@ -36,7 +36,13 @@ export function toSourceOrSink(
 		return zeroIndexedNumber((n | 0) - 1)
 	}
 
-	instance.log('error', `Invalid ${type} (${optionValue})`)
+	instance.log(
+		'error',
+		`Invalid ${type} (${
+			// eslint-disable-next-line @typescript-eslint/no-base-to-string
+			optionValue
+		})`,
+	)
 	return null
 }
 
@@ -63,6 +69,7 @@ export function toMixOrLR(instance: sqInstance, model: Model, optionValue: Optio
 		return zeroIndexedNumber((n | 0) - 1)
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-base-to-string
 	instance.log('error', `Invalid mix-or-LR (${optionValue})`)
 	return null
 }

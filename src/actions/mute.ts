@@ -1,16 +1,16 @@
 import type { Equal, Expect } from 'type-testing'
 import type {
+	CompanionActionDefinitions,
 	CompanionInputFieldDropdown,
-	CompanionMigrationAction,
 	CompanionOptionValues,
 } from '@companion-module/base'
-import type { CompanionActionDefinitions } from './compat.js'
 import { faderNumber } from '../fader-number.js'
 import type { sqInstance } from '../instance.js'
 import { type Mixer } from '../mixer/mixer.js'
 import { type InputOutputType, type Model } from '../mixer/model.js'
 import { MuteOperation } from '../mixer/mixer.js'
 import { toSourceOrSink } from './to-source-or-sink.js'
+import type { OldCompanionMigrationAction as CompanionMigrationAction } from '../upgrades/types.js'
 import { moveZeroIndexedOptionToOneIndexed } from '../upgrades/zero-indexed-to-one.js'
 import type { ZeroIndexed } from '../utils/indexed.js'
 import { repr } from '../utils/pretty.js'
@@ -178,7 +178,7 @@ const MuteOption = {
 		{ label: 'On', id: MuteOperation.On },
 		{ label: 'Off', id: MuteOperation.Off },
 	],
-} satisfies CompanionInputFieldDropdown
+} satisfies CompanionInputFieldDropdown<typeof StatusOptionId>
 
 type MuteOptions = {
 	n: ZeroIndexed

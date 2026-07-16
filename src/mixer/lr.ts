@@ -1,7 +1,8 @@
-import type { CompanionInputFieldBase, CompanionMigrationAction, CompanionOptionValues } from '@companion-module/base'
+import type { CompanionInputFieldBase, CompanionOptionValues } from '@companion-module/base'
 import { tryUpgradeAssignMixOrLREncoding } from '../actions/assign.js'
 import { tryUpgradeLevelMixOrLREncoding } from '../actions/level.js'
 import { tryUpgradePanBalanceMixOrLREncoding } from '../actions/pan-balance.js'
+import type { OldCompanionMigrationAction as CompanionMigrationAction } from '../upgrades/types.js'
 import { type OneIndexed, oneIndexedNumber, type ZeroIndexed, zeroIndexedNumber } from '../utils/indexed.js'
 
 /**
@@ -151,7 +152,7 @@ export function tryUpdateAllLRMixEncodings(action: CompanionMigrationAction): bo
  * value.
  */
 export function convertZeroIndexedLowercaseLROptionToOneIndexedUppercaseLROption(
-	options: CompanionMigrationAction['options'],
+	options: CompanionOptionValues,
 	oldId: CompanionInputFieldBase['id'],
 	newId: CompanionInputFieldBase['id'],
 ): void {
@@ -167,7 +168,7 @@ export function convertZeroIndexedLowercaseLROptionToOneIndexedUppercaseLROption
  * array.
  */
 export function convertZeroIndexedLowercaseLRArrayOptionToOneIndexedUppercaseLRArrayOption(
-	options: CompanionMigrationAction['options'],
+	options: CompanionOptionValues,
 	oldId: CompanionInputFieldBase['id'],
 	newId: CompanionInputFieldBase['id'],
 ): void {

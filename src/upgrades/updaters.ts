@@ -1,17 +1,7 @@
-import type {
-	CompanionMigrationAction,
-	CompanionMigrationFeedback,
-	CompanionStaticUpgradeProps,
-	CompanionStaticUpgradeScript,
-	CompanionUpgradeContext,
-} from '@companion-module/base'
-import type { RawConfig, SQConfig } from '../config.js'
+import type { SQConfig } from '../config.js'
+import type { TryUpdateAction, TryUpdateFeedback, UpgradeContext, UpgradeProps, UpgradeScript } from './types.js'
 
-type UpgradeContext = CompanionUpgradeContext<SQConfig>
-type UpgradeProps = CompanionStaticUpgradeProps<SQConfig>
-type UpgradeScript = CompanionStaticUpgradeScript<SQConfig>
-
-export function ActionUpdater(tryUpdate: (action: CompanionMigrationAction) => boolean): UpgradeScript {
+export function ActionUpdater(tryUpdate: TryUpdateAction): UpgradeScript {
 	return (_context: UpgradeContext, props: UpgradeProps) => {
 		return {
 			updatedActions: props.actions.filter(tryUpdate),
@@ -22,7 +12,7 @@ export function ActionUpdater(tryUpdate: (action: CompanionMigrationAction) => b
 	}
 }
 
-export function ConfigUpdater(tryUpdate: (config: RawConfig) => boolean): UpgradeScript {
+export function ConfigUpdater(tryUpdate: (config: SQConfig) => boolean): UpgradeScript {
 	return (_context: UpgradeContext, props: UpgradeProps) => {
 		return {
 			updatedActions: [],
@@ -33,7 +23,7 @@ export function ConfigUpdater(tryUpdate: (config: RawConfig) => boolean): Upgrad
 	}
 }
 
-export function FeedbackUpdater(tryUpdate: (feedback: CompanionMigrationFeedback) => boolean): UpgradeScript {
+export function FeedbackUpdater(tryUpdate: TryUpdateFeedback): UpgradeScript {
 	return (_context: UpgradeContext, props: UpgradeProps) => {
 		return {
 			updatedActions: [],

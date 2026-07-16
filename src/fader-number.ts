@@ -10,7 +10,7 @@ export function faderNumber<Id extends CompanionInputFieldBase['id']>(
 	id: Id,
 	counts: Model['inputOutputCounts'],
 	type: Exclude<InputOutputType, 'lr'>,
-): CompanionInputFieldNumber {
+): CompanionInputFieldNumber<Id> {
 	return {
 		type: 'number',
 		label,

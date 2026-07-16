@@ -53,7 +53,7 @@ export function mixOrLROption<Id extends CompanionInputFieldBase['id']>(
 	label: string,
 	id: Id,
 	choices: DropdownChoice[],
-): CompanionInputFieldDropdown {
+): CompanionInputFieldDropdown<Id> {
 	return {
 		type: 'dropdown',
 		label,

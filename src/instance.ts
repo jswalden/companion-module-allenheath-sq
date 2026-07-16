@@ -1,7 +1,7 @@
 import {
-	type CompanionVariableDefinition,
 	type CompanionVariableValue,
 	InstanceBase,
+	type InstanceTypes,
 	type SomeCompanionConfigField,
 } from '@companion-module/base'
 import { getActions, type SQActions } from './actions/actions.js'
@@ -10,21 +10,14 @@ import { getFeedbacks, type SQFeedbacks } from './feedbacks/feedbacks.js'
 import { Mixer } from './mixer/mixer.js'
 import { canUpdateConfigWithoutRestarting, noConnectionConfig, validateConfig } from './config.js'
 import { getPresets } from './presets/presets.js'
-import {
-	CurrentSceneId,
-	getVariables,
-	SceneRecalledTriggerId,
-	type SQVariables,
-	type VariableDefinitions,
-} from './variables.js'
+import { CurrentSceneId, getVariables, SceneRecalledTriggerId, type SQVariables } from './variables.js'
 
 /**
  * Full module typing information.
  *
  * @allowunused
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-interface SQTypes {
+interface SQTypes extends InstanceTypes {
 	config: SQConfig
 	secrets: SQSecrets
 	actions: SQActions
@@ -32,17 +25,8 @@ interface SQTypes {
 	variables: SQVariables
 }
 
-function translateVariableDefinitions(defs: VariableDefinitions): CompanionVariableDefinition[] {
-	return Object.entries(defs).map(
-		([variableId, { name }]): CompanionVariableDefinition => ({
-			name,
-			variableId,
-		}),
-	)
-}
-
 /** An SQ mixer connection instance. */
-export class sqInstance extends InstanceBase<SQConfig> {
+export class sqInstance extends InstanceBase<SQTypes> {
 	/** Configuration dictating the behavior of this instance. */
 	config = noConnectionConfig()
 
@@ -111,7 +95,7 @@ export class sqInstance extends InstanceBase<SQConfig> {
 
 	/** Set variable definitions for this instance. */
 	initVariableDefinitions(mixer: Mixer): void {
-		this.setVariableDefinitions(translateVariableDefinitions(getVariables(mixer.model)))
+		this.setVariableDefinitions(getVariables(mixer.model))
 
 		this.setVariableValues({
 			[SceneRecalledTriggerId]: mixer.sceneRecalledTrigger,
@@ -161,7 +145,7 @@ export class sqInstance extends InstanceBase<SQConfig> {
 		this.setPresetDefinitions(getPresets(this, model))
 
 		//this.checkVariables();
-		this.checkFeedbacks()
+		this.checkAllFeedbacks() // XXX optimize?
 
 		mixer.start(getHost(newConfig))
 	}

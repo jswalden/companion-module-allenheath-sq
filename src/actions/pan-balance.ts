@@ -1,14 +1,13 @@
 import type { Equal, Expect } from 'type-testing'
 import type {
 	CompanionActionDefinition,
+	CompanionActionDefinitions,
 	CompanionInputFieldDropdown,
 	CompanionInputFieldNumber,
-	CompanionMigrationAction,
 	CompanionOptionValues,
 	DropdownChoice,
 } from '@companion-module/base'
 import { mixOrLROption } from './choices.js'
-import type { CompanionActionDefinitions } from './compat.js'
 import type { sqInstance } from '../instance.js'
 import {
 	convertZeroIndexedLowercaseLROptionToOneIndexedUppercaseLROption,
@@ -27,6 +26,7 @@ import {
 } from '../mixer/nrpn/source-to-sink.js'
 import { type PanBalance } from '../mixer/pan-balance.js'
 import { toMixOrLR, toSourceOrSink } from './to-source-or-sink.js'
+import type { OldCompanionMigrationAction as CompanionMigrationAction } from '../upgrades/types.js'
 import { moveZeroIndexedOptionToOneIndexed } from '../upgrades/zero-indexed-to-one.js'
 import type { ZeroIndexed } from '../utils/indexed.js'
 import { repr } from '../utils/pretty.js'
@@ -210,7 +210,7 @@ export const PanLevelOption = {
 		return panLevels
 	})(),
 	minChoicesForSearch: 0,
-} as const satisfies CompanionInputFieldDropdown
+} as const satisfies CompanionInputFieldDropdown<typeof PanBalanceLevelOptionId>
 
 /** The set of pan/balance choice values offered for selection as pan levels. */
 export type PanBalanceChoice = PanBalance | 998 | 999
@@ -230,6 +230,7 @@ export function getPanBalance(instance: sqInstance, options: CompanionOptionValu
 		return rawOptionVal
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-base-to-string
 	const optionVal = String(rawOptionVal)
 	if (optionVal === 'CTR') {
 		return 'CTR'
@@ -472,7 +473,7 @@ function signalOption<Id extends CompanionInputFieldNumber['id']>(
 	id: Id,
 	counts: Model['inputOutputCounts'],
 	type: 'inputChannel' | 'matrix' | 'group' | 'fxReturn',
-): CompanionInputFieldNumber {
+): CompanionInputFieldNumber<Id> {
 	return {
 		type: 'number',
 		label,
@@ -532,6 +533,7 @@ export function panBalanceActions(
 
 				mixer.setInputChannelPanBalanceInMixOrLR(inputChannel, panBalance, mixOrLR)
 			},
+			optionsToMonitorForSubscribe: [PanBalanceSourceOptionId, PanBalanceSinkOptionId],
 		},
 		[PanBalanceActionId.GroupPanBalanceInMixOrLR]: {
 			name: 'Pan/Bal group level to mix',
@@ -547,6 +549,7 @@ export function panBalanceActions(
 
 				mixer.setGroupPanBalanceInMixOrLR(group, panBalance, mixOrLR)
 			},
+			optionsToMonitorForSubscribe: [PanBalanceSourceOptionId, PanBalanceSinkOptionId],
 		},
 		[PanBalanceActionId.FXReturnPanBalanceInMixOrLR]: {
 			name: 'Pan/Bal FX return level to mix',
@@ -562,6 +565,7 @@ export function panBalanceActions(
 
 				mixer.setFXReturnPanBalanceInMixOrLR(fxReturn, panBalance, mixOrLR)
 			},
+			optionsToMonitorForSubscribe: [PanBalanceSourceOptionId, PanBalanceSinkOptionId],
 		},
 		[PanBalanceActionId.FXReturnPanBalanceInGroup]: {
 			name: 'Pan/Bal FX return level to group',
@@ -619,6 +623,7 @@ export function panBalanceActions(
 					mixer.setMixPanBalanceInMatrix(mixOrLR, panBalance, matrix)
 				}
 			},
+			optionsToMonitorForSubscribe: [PanBalanceSourceOptionId, PanBalanceSinkOptionId],
 		},
 		[PanBalanceActionId.GroupPanBalanceInMatrix]: {
 			name: 'Pan/Bal group level to matrix',
@@ -634,6 +639,7 @@ export function panBalanceActions(
 
 				mixer.setGroupPanBalanceInMatrix(group, panBalance, matrix)
 			},
+			optionsToMonitorForSubscribe: [PanBalanceSourceOptionId, PanBalanceSinkOptionId],
 		},
 	}
 }

@@ -1,4 +1,4 @@
-import type { CompanionFeedbackDefinitions } from './compat.js'
+import type { CompanionFeedbackDefinitions } from '@companion-module/base'
 import type { Mixer } from '../mixer/mixer.js'
 import { type MuteFeedbackId, type MuteFeedbacks, muteFeedbacks } from './mute.js'
 

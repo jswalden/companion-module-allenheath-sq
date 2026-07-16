@@ -1,6 +1,5 @@
 import type { Equal, Expect } from 'type-testing'
-import type { CompanionMigrationAction, CompanionOptionValues } from '@companion-module/base'
-import type { CompanionActionDefinitions } from '../compat.js'
+import type { CompanionActionDefinitions, CompanionOptionValues } from '@companion-module/base'
 import { faderNumber } from '../../fader-number.js'
 import type { sqInstance } from '../../instance.js'
 import { LRStrip } from '../../mixer/lr.js'
@@ -17,6 +16,7 @@ import {
 	ShowVarOptionId,
 } from '../pan-balance.js'
 import { toSourceOrSink } from '../to-source-or-sink.js'
+import type { OldCompanionMigrationAction } from '../../upgrades/types.js'
 import { moveZeroIndexedOptionToOneIndexed } from '../../upgrades/zero-indexed-to-one.js'
 import type { ZeroIndexed } from '../../utils/indexed.js'
 
@@ -87,7 +87,7 @@ const ObsoleteOutputPanBalanceFaderOptionId = 'input'
  * This function rewrites actions that are old-style "pan/balance to output"
  * actions to new, sink-type-specific actions.
  */
-export function tryConvertOldPanToOutputActionToSinkSpecific(action: CompanionMigrationAction): boolean {
+export function tryConvertOldPanToOutputActionToSinkSpecific(action: OldCompanionMigrationAction): boolean {
 	if (action.actionId !== ObsoletePanToOutputId) {
 		return false
 	}
@@ -161,7 +161,7 @@ export function tryConvertOldPanToOutputActionToSinkSpecific(action: CompanionMi
  * zero-indexed number.  This function moves that old, zero-indexed number
  * option to a new, one-indexed number option.
  */
-export function tryMakeOutputPanBalanceItemOneIndexed(action: CompanionMigrationAction): boolean {
+export function tryMakeOutputPanBalanceItemOneIndexed(action: OldCompanionMigrationAction): boolean {
 	if (!AllOutputFaderPanBalanceActions.has(action.actionId)) {
 		return false
 	}
@@ -282,6 +282,7 @@ export function outputPanBalanceActions(
 
 				mixer.setLROutputPanBalance(panBalanceChoice)
 			},
+			optionsToMonitorForSubscribe: [],
 		},
 		[OutputPanBalanceActionId.MixPanBalanceOutput]: {
 			name: 'Mix Pan/Bal to output',
@@ -319,6 +320,7 @@ export function outputPanBalanceActions(
 
 				mixer.setMixOutputPanBalance(mix, panBalanceChoice)
 			},
+			optionsToMonitorForSubscribe: [OutputPanBalanceFaderOptionId],
 		},
 
 		[OutputPanBalanceActionId.MatrixPanBalanceOutput]: {
@@ -357,6 +359,7 @@ export function outputPanBalanceActions(
 
 				mixer.setMatrixOutputPanBalance(matrix, panBalanceChoice)
 			},
+			optionsToMonitorForSubscribe: [OutputPanBalanceFaderOptionId],
 		},
 	}
 }

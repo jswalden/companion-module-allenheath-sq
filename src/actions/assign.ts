@@ -1,15 +1,14 @@
 import type { Equal, Expect } from 'type-testing'
 import type {
+	CompanionActionDefinitions,
 	CompanionInputFieldBase,
 	CompanionInputFieldCheckbox,
 	CompanionInputFieldDropdown,
 	CompanionInputFieldMultiDropdown,
 	CompanionInputFieldNumber,
-	CompanionMigrationAction,
 	CompanionOptionValues,
 } from '@companion-module/base'
 import type { Choices } from './choices.js'
-import type { CompanionActionDefinitions } from './compat.js'
 import type { sqInstance } from '../instance.js'
 import {
 	convertZeroIndexedLowercaseLRArrayOptionToOneIndexedUppercaseLRArrayOption,
@@ -23,6 +22,7 @@ import type { Mixer } from '../mixer/mixer.js'
 import type { InputOutputType, Model } from '../mixer/model.js'
 import { type OptionValue, toMixOrLR, toSourceOrSink } from './to-source-or-sink.js'
 import { moveOption } from '../upgrades/move-option.js'
+import type { OldCompanionMigrationAction as CompanionMigrationAction } from '../upgrades/types.js'
 import {
 	convertZeroIndexedArrayOptionToOneIndexed,
 	moveZeroIndexedOptionToOneIndexed,
@@ -330,7 +330,7 @@ function sourceOption<Id extends CompanionInputFieldNumber['id']>(
 	id: Id,
 	counts: Model['inputOutputCounts'],
 	type: 'inputChannel' | 'group' | 'mix' | 'fxReturn' | 'lr',
-): CompanionInputFieldNumber {
+): CompanionInputFieldNumber<Id> {
 	return {
 		type: 'number',
 		label,
@@ -341,7 +341,10 @@ function sourceOption<Id extends CompanionInputFieldNumber['id']>(
 	}
 }
 
-function sourceMixOrLROption(sourceLabel: string, choices: Choices): CompanionInputFieldDropdown {
+function sourceMixOrLROption(
+	sourceLabel: string,
+	choices: Choices,
+): CompanionInputFieldDropdown<typeof AssignSourceOptionId> {
 	return {
 		type: 'dropdown',
 		label: sourceLabel,
@@ -356,7 +359,7 @@ function sinksOption(
 	sinkLabel: string,
 	sinkChoices: keyof Choices,
 	choices: Choices,
-): CompanionInputFieldMultiDropdown {
+): CompanionInputFieldMultiDropdown<typeof AssignSinksOptionId> {
 	return {
 		type: 'multidropdown',
 		label: sinkLabel,
@@ -408,7 +411,7 @@ export function assignActions(
 		label: 'Active',
 		id: AssignActiveOptionId,
 		default: true,
-	} as const satisfies CompanionInputFieldCheckbox
+	} as const satisfies CompanionInputFieldCheckbox<typeof AssignActiveOptionId>
 
 	return {
 		[AssignActionId.InputChannelToMix]: {

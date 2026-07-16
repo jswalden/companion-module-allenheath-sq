@@ -1,12 +1,11 @@
 import type { Equal, Expect } from 'type-testing'
 import type {
+	CompanionActionDefinitions,
 	CompanionInputFieldNumber,
-	CompanionMigrationAction,
 	CompanionOptionValues,
 	DropdownChoice,
 } from '@companion-module/base'
 import { mixOrLROption } from './choices.js'
-import type { CompanionActionDefinitions } from './compat.js'
 import {
 	type FadeDuration,
 	type FadeDurationOptionId,
@@ -34,6 +33,7 @@ import {
 	type SourceSinkForNRPN,
 } from '../mixer/nrpn/source-to-sink.js'
 import { toMixOrLR, toSourceOrSink } from './to-source-or-sink.js'
+import type { OldCompanionMigrationAction as CompanionMigrationAction } from '../upgrades/types.js'
 import { moveZeroIndexedOptionToOneIndexed } from '../upgrades/zero-indexed-to-one.js'
 import type { ZeroIndexed } from '../utils/indexed.js'
 
@@ -331,7 +331,7 @@ function signalOption<Id extends CompanionInputFieldNumber['id']>(
 	id: Id,
 	counts: Model['inputOutputCounts'],
 	type: 'inputChannel' | 'group' | 'fxReturn' | 'fxSend' | 'matrix',
-): CompanionInputFieldNumber {
+): CompanionInputFieldNumber<Id> {
 	return {
 		type: 'number',
 		label,

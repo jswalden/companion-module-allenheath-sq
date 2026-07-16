@@ -1,11 +1,11 @@
 import type { Equal, Expect } from 'type-testing'
-import type { CompanionFeedbackDefinition, CompanionMigrationFeedback } from '@companion-module/base'
-import type { CompanionFeedbackDefinitions } from './compat.js'
+import type { CompanionBooleanFeedbackDefinition, CompanionFeedbackDefinitions } from '@companion-module/base'
 import { faderNumber } from '../fader-number.js'
 import { LRStrip } from '../mixer/lr.js'
 import type { Mixer } from '../mixer/mixer.js'
 import type { InputOutputType } from '../mixer/model.js'
 import { calculateMuteNRPN } from '../mixer/nrpn/mute.js'
+import { type OldCompanionMigrationFeedback as CompanionMigrationFeedback } from '../upgrades/types.js'
 import { moveZeroIndexedOptionToOneIndexed } from '../upgrades/zero-indexed-to-one.js'
 import { CarmineRed, White } from '../utils/colors.js'
 import { zeroIndexedNumber } from '../utils/indexed.js'
@@ -120,7 +120,10 @@ export function muteFeedbacks(mixer: Mixer): CompanionFeedbackDefinitions<MuteFe
 	const faderOption = (label: string, type: Exclude<InputOutputType, 'lr'>) =>
 		faderNumber(label, MuteFeedbackFaderOptionId, counts, type)
 
-	function muteFeedback(label: string, type: InputOutputType): CompanionFeedbackDefinition {
+	function muteFeedback(
+		label: string,
+		type: InputOutputType,
+	): CompanionBooleanFeedbackDefinition<MuteNumberedSignalType['options']> {
 		return {
 			type: 'boolean',
 			name: `Mute ${label}`,

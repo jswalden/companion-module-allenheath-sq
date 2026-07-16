@@ -1,4 +1,4 @@
-import type { CompanionActionDefinition } from '@companion-module/base'
+import type { CompanionActionDefinitions } from '@companion-module/base'
 import { type AssignActionId, type AssignActions, assignActions } from './assign.js'
 import { Choices } from './choices.js'
 import type { sqInstance } from '../instance.js'
@@ -15,7 +15,11 @@ import { type PanBalanceActionId, type PanBalanceActions, panBalanceActions } fr
 import { type SceneActionId, type SceneActions, sceneActions } from './scene.js'
 import { type SoftKeyActionId, type SoftKeyActions, softKeyActions } from './softkey.js'
 
-/** All action IDs. */
+/**
+ * All action IDs.
+ *
+ * @allowunused
+ */
 export type ActionId =
 	| MuteActionId
 	| AssignActionId
@@ -46,7 +50,7 @@ export type SQActions = AssignActions &
  * @returns
  *   All actions defined by this module.
  */
-export function getActions(instance: sqInstance, mixer: Mixer): Record<ActionId, CompanionActionDefinition> {
+export function getActions(instance: sqInstance, mixer: Mixer): CompanionActionDefinitions<SQActions> {
 	const choices = new Choices(mixer.model)
 
 	const mixesAndLR = choices.mixesAndLR
