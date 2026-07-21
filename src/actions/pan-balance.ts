@@ -8,6 +8,7 @@ import type {
 	DropdownChoice,
 } from '@companion-module/base'
 import { mixOrLROption } from './choices.js'
+import type { CompanionActionDefinitions } from './compat.js'
 import type { sqInstance } from '../instance.js'
 import {
 	convertZeroIndexedLowercaseLROptionToOneIndexedUppercaseLROption,
@@ -499,7 +500,7 @@ export function panBalanceActions(
 	instance: sqInstance,
 	mixer: Mixer,
 	mixesAndLR: DropdownChoice[],
-): Record<PanBalanceActionId, CompanionActionDefinition> {
+): CompanionActionDefinitions<PanBalanceActions> {
 	const model = mixer.model
 	const counts = model.inputOutputCounts
 

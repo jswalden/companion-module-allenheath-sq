@@ -1,5 +1,6 @@
 import type { Equal, Expect } from 'type-testing'
-import type { CompanionActionDefinition, CompanionMigrationAction } from '@companion-module/base'
+import type { CompanionMigrationAction } from '@companion-module/base'
+import type { CompanionActionDefinitions } from './compat.js'
 import { type Model } from '../mixer/model.js'
 import { type Mixer } from '../mixer/mixer.js'
 import type { sqInstance } from '../instance.js'
@@ -88,7 +89,7 @@ function toSceneStep(instance: sqInstance, stepOption: OptionValue): number | nu
  * @returns
  *   The set of all scene action definitions.
  */
-export function sceneActions(instance: sqInstance, mixer: Mixer): Record<SceneActionId, CompanionActionDefinition> {
+export function sceneActions(instance: sqInstance, mixer: Mixer): CompanionActionDefinitions<SceneActions> {
 	const model = mixer.model
 
 	return {

@@ -1,5 +1,6 @@
 import type { Equal, Expect } from 'type-testing'
-import type { CompanionActionDefinition, CompanionMigrationAction, CompanionOptionValues } from '@companion-module/base'
+import type { CompanionMigrationAction, CompanionOptionValues } from '@companion-module/base'
+import type { CompanionActionDefinitions } from '../compat.js'
 import { faderNumber } from '../../fader-number.js'
 import {
 	type FadeDuration,
@@ -242,10 +243,7 @@ function getLevelType(
  * @returns
  *   The set of all output-adjustment action definitions.
  */
-export function outputLevelActions(
-	instance: sqInstance,
-	mixer: Mixer,
-): Record<OutputLevelActionId, CompanionActionDefinition> {
+export function outputLevelActions(instance: sqInstance, mixer: Mixer): CompanionActionDefinitions<OutputLevelActions> {
 	const model = mixer.model
 	const counts = model.inputOutputCounts
 

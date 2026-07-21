@@ -1,6 +1,5 @@
 import type { Equal, Expect } from 'type-testing'
 import type {
-	CompanionActionDefinition,
 	CompanionInputFieldBase,
 	CompanionInputFieldCheckbox,
 	CompanionInputFieldDropdown,
@@ -10,6 +9,7 @@ import type {
 	CompanionOptionValues,
 } from '@companion-module/base'
 import type { Choices } from './choices.js'
+import type { CompanionActionDefinitions } from './compat.js'
 import type { sqInstance } from '../instance.js'
 import {
 	convertZeroIndexedLowercaseLRArrayOptionToOneIndexedUppercaseLRArrayOption,
@@ -384,7 +384,7 @@ export function assignActions(
 	instance: sqInstance,
 	mixer: Mixer,
 	choices: Choices,
-): Record<AssignActionId, CompanionActionDefinition> {
+): CompanionActionDefinitions<AssignActions> {
 	const model = mixer.model
 	const counts = model.inputOutputCounts
 

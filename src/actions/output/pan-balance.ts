@@ -1,5 +1,6 @@
 import type { Equal, Expect } from 'type-testing'
-import type { CompanionActionDefinition, CompanionMigrationAction, CompanionOptionValues } from '@companion-module/base'
+import type { CompanionMigrationAction, CompanionOptionValues } from '@companion-module/base'
+import type { CompanionActionDefinitions } from '../compat.js'
 import { faderNumber } from '../../fader-number.js'
 import type { sqInstance } from '../../instance.js'
 import { LRStrip } from '../../mixer/lr.js'
@@ -237,7 +238,7 @@ function getPanBalanceType(
 export function outputPanBalanceActions(
 	instance: sqInstance,
 	mixer: Mixer,
-): Record<OutputPanBalanceActionId, CompanionActionDefinition> {
+): CompanionActionDefinitions<OutputPanBalanceActions> {
 	const model = mixer.model
 	const counts = model.inputOutputCounts
 

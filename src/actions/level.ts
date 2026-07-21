@@ -1,12 +1,12 @@
 import type { Equal, Expect } from 'type-testing'
 import type {
-	CompanionActionDefinition,
 	CompanionInputFieldNumber,
 	CompanionMigrationAction,
 	CompanionOptionValues,
 	DropdownChoice,
 } from '@companion-module/base'
 import { mixOrLROption } from './choices.js'
+import type { CompanionActionDefinitions } from './compat.js'
 import {
 	type FadeDuration,
 	type FadeDurationOptionId,
@@ -359,7 +359,7 @@ export function levelActions(
 	instance: sqInstance,
 	mixer: Mixer,
 	mixesAndLR: DropdownChoice[],
-): Record<LevelActionId, CompanionActionDefinition> {
+): CompanionActionDefinitions<LevelActions> {
 	const model = mixer.model
 	const counts = model.inputOutputCounts
 
