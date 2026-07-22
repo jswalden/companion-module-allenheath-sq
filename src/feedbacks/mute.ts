@@ -1,5 +1,6 @@
 import type { Equal, Expect } from 'type-testing'
 import type { CompanionFeedbackDefinition, CompanionMigrationFeedback } from '@companion-module/base'
+import type { CompanionFeedbackDefinitions } from './compat.js'
 import { faderNumber } from '../fader-number.js'
 import { LRStrip } from '../mixer/lr.js'
 import type { Mixer } from '../mixer/mixer.js'
@@ -113,7 +114,7 @@ export const typeToMuteFeedback = {
 	dca: MuteFeedbackId.MuteDCA,
 } as const satisfies Record<InputOutputType, MuteFeedbackId>
 
-export function muteFeedbacks(mixer: Mixer): Record<MuteFeedbackId, CompanionFeedbackDefinition> {
+export function muteFeedbacks(mixer: Mixer): CompanionFeedbackDefinitions<MuteFeedbacks> {
 	const counts = mixer.model.inputOutputCounts
 
 	const faderOption = (label: string, type: Exclude<InputOutputType, 'lr'>) =>
